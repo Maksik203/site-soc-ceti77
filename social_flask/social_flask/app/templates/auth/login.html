@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Вход</h3>
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">{{ form.phone.label }}{{ form.phone(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.password.label }}{{ form.password(class="form-control") }}</div>
+                    <div class="form-check mb-3">
+                        {{ form.remember(class="form-check-input") }} {{ form.remember.label(class="form-check-label") }}
+                    </div>
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+                <div class="mt-3 text-center">
+                    <p class="text-muted small">Или войдите через соцсети</p>
+                    <div class="d-flex gap-2 justify-content-center flex-wrap">
+                        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('auth.social_login', provider='vk') }}">VK</a>
+                        <a class="btn btn-outline-info btn-sm" href="{{ url_for('auth.social_login', provider='telegram') }}">Telegram</a>
+                        <a class="btn btn-outline-danger btn-sm" href="{{ url_for('auth.social_login', provider='google') }}">Google</a>
+                    </div>
+                </div>
+                <p class="mt-3 text-center">Нет аккаунта? <a href="{{ url_for('auth.register') }}">Регистрация</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 d-none d-lg-block">
+        <div class="hero-blur p-4">
+            <h4>Вернитесь к друзьям</h4>
+            <p>Новости, сообщения, группы и развлечения — всё в одном месте.</p>
+            <ul class="list-unstyled small text-muted">
+                <li>• Быстрые уведомления</li>
+                <li>• Группы по интересам</li>
+                <li>• Фото, видео, репосты</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

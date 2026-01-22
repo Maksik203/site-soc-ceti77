@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="list-group shadow-sm">
+            {% for chat in chats %}
+                <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{{ url_for('messages.direct', user_id=chat.memberships[0].user_id if chat.memberships[0].user_id != current_user.id else chat.memberships[1].user_id) }}">
+                    {{ chat.title or "Чат" }} <span class="badge text-bg-light">{{ chat.messages|length }}</span>
+                </a>
+            {% else %}
+                <div class="list-group-item text-muted">Пока нет диалогов</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="alert alert-info">Выберите диалог или откройте профиль пользователя, чтобы начать чат.</div>
+    </div>
+</div>
+{% endblock %}
+

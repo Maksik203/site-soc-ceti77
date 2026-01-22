@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <img class="rounded-circle mb-2 avatar-lg" src="{{ user.avatar_url or url_for('static', filename='img/avatar-placeholder.svg') }}" alt="avatar">
+                <h4>{{ user.name }}</h4>
+                <p class="text-muted small">{{ user.city or "Город не указан" }}</p>
+                <div class="d-grid gap-2">
+                    {% if user.id == current_user.id %}
+                        <a class="btn btn-primary" href="{{ url_for('profile.edit') }}">Редактировать</a>
+                    {% else %}
+                        <form method="post" action="{{ url_for('profile.follow', user_id=user.id) }}">
+                            <button class="btn btn-outline-primary">Подписаться</button>
+                        </form>
+                    {% endif %}
+                    <a class="btn btn-outline-secondary" href="{{ url_for('messages.direct', user_id=user.id) }}">Сообщение</a>
+                </div>
+            </div>
+        </div>
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h6>Интересы</h6>
+                <p class="text-muted small">{{ user.interests or "Добавьте интересы" }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h5 class="card-title">О себе</h5>
+                <p>{{ user.bio or "Заполните информацию о себе" }}</p>
+                <div class="small text-muted">
+                    <div>День рождения: {{ user.date_of_birth or "—" }}</div>
+                    <div>Род деятельности: {{ user.occupation or "—" }}</div>
+                    <div>Приватность: {{ user.privacy_level.value if user.privacy_level else "public" }}</div>
+                </div>
+            </div>
+        </div>
+        {% if can_view %}
+            <div class="alert alert-info">Лента пользователя будет показывать его посты. Подключите вывод из базы.</div>
+        {% else %}
+            <div class="alert alert-warning">Профиль скрыт настройками приватности.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

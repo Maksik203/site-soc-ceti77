@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">Создать группу</h5>
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-2">{{ form.name.label }}{{ form.name(class="form-control") }}</div>
+                    <div class="mb-2">{{ form.description.label }}{{ form.description(class="form-control", rows=2) }}</div>
+                    <div class="mb-2">{{ form.visibility.label }}{{ form.visibility(class="form-select") }}</div>
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="row row-cols-1 row-cols-md-2 g-3">
+            {% for g in groups %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ g.name }}</h6>
+                            <p class="text-muted small">{{ g.description or "Без описания" }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge text-bg-light">{{ g.visibility }}</span>
+                                <a class="btn btn-sm btn-outline-primary" href="{{ url_for('groups.detail', group_id=g.id) }}">Открыть</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="alert alert-info">Групп пока нет, создайте первую!</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+

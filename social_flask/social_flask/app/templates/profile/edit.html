@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Редактирование профиля</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3 text-center">
+                        <p class="mb-1"><strong>Текущая аватарка</strong></p>
+                        <img class="rounded-circle avatar-lg mb-2"
+                             src="{{ current_user.avatar_url or url_for('static', filename='img/avatar-placeholder.svg') }}"
+                             alt="avatar">
+                    </div>
+                    {% if stickers %}
+                        <div class="mb-3">
+                            <label class="form-label">Выберите готовую аватарку</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for url in stickers %}
+                                    <label class="btn btn-outline-secondary p-1">
+                                        <input type="radio"
+                                               name="avatar_choice"
+                                               value="{{ url }}"
+                                               class="me-1"
+                                               {% if current_user.avatar_url == url %}checked{% endif %}>
+                                        <img src="{{ url }}" alt="avatar sticker" style="width:40px;height:40px;border-radius:50%;object-fit:cover;">
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="mb-3">
+                        {{ form.avatar_upload.label }}
+                        {{ form.avatar_upload(class="form-control", accept="image/*") }}
+                        <div class="form-text">Можно выбрать файл с компьютера или из галереи телефона.</div>
+                    </div>
+                    <hr>
+                    <div class="mb-3">{{ form.bio.label }}{{ form.bio(class="form-control", rows=3) }}</div>
+                    <div class="mb-3">{{ form.city.label }}{{ form.city(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.occupation.label }}{{ form.occupation(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.interests.label }}{{ form.interests(class="form-control", rows=2) }}</div>
+                    <div class="mb-3">{{ form.date_of_birth.label }}{{ form.date_of_birth(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.privacy_level.label }}{{ form.privacy_level(class="form-select") }}</div>
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

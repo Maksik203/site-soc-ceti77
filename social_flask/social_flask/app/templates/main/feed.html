@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-8">
+        {% if current_user.is_authenticated and post_form %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Новый пост</h5>
+                    <form method="post" action="{{ url_for('main.create_post') }}" enctype="multipart/form-data">
+                        {{ post_form.hidden_tag() }}
+                        {{ post_form.body(class="form-control mb-2", rows=3, placeholder="Расскажите, что происходит") }}
+                        <div class="post-dropzone mb-2" data-dropzone-target="{{ post_form.image.id }}">
+                            <span class="small text-muted">Перетащите фото сюда или выберите файл ниже</span>
+                        </div>
+                        <div class="row g-2 align-items-end">
+                            <div class="col-md-4">{{ post_form.image(class="form-control", accept="image/*") }}</div>
+                            <div class="col-md-4">{{ post_form.video(class="form-control", accept="video/*") }}</div>
+                            <div class="col-md-4">{{ post_form.media_url(class="form-control", placeholder="Ссылка на интересное видео") }}</div>
+                        </div>
+                        <div class="row g-2 align-items-end mt-1">
+                            <div class="col-md-3">{{ post_form.media_type(class="form-select") }}</div>
+                            <div class="col-md-3 d-grid">{{ post_form.visibility(class="form-select") }}</div>
+                        </div>
+                        <div class="d-flex justify-content-end mt-2">
+                            {{ post_form.submit(class="btn btn-primary px-4") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        {% else %}
+            <div class="card shadow-sm mb-3">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title mb-1">Присоединяйтесь к общению</h5>
+                        <p class="text-muted small mb-0">Зарегистрируйтесь или войдите, чтобы публиковать свои посты и ставить лайки.</p>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('auth.register') }}">Регистрация</a>
+                        <a class="btn btn-primary btn-sm" href="{{ url_for('auth.login') }}">Войти</a>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% for post in posts %}
+            <div class="card mb-3 shadow-sm js-post-card" data-post-id="{{ post.id }}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button"
+                                    class="btn p-0 border-0 bg-transparent avatar-click"
+                                    data-avatar-full="{{ post.author.avatar_url or url_for('static', filename='img/avatar-placeholder.svg') }}">
+                                <img class="rounded-circle feed-avatar"
+                                     src="{{ post.author.avatar_url or url_for('static', filename='img/avatar-placeholder.svg') }}"
+                                     alt="avatar">
+                            </button>
+                            <div>
+                                <a class="fw-semibold text-decoration-none" href="{{ url_for('profile.view', user_id=post.author.id) }}">{{ post.author.name }}</a>
+                                <div class="text-muted small">{{ post.created_at.strftime("%d %b %H:%M") }}</div>
+                            </div>
+                        </div>
+                        {% if post.original_post %}
+                            <span class="badge text-bg-secondary">Репост</span>
+                        {% endif %}
+                    </div>
+                    <p class="mt-2">{{ post.body }}</p>
+                    {% if post.media_url %}
+                        {% if post.media_type == 'image' %}
+                            <img src="{{ post.media_url }}" alt="media" class="img-fluid rounded mb-2">
+                        {% elif post.media_type == 'video' %}
+                            <video class="w-100 rounded mb-2" controls preload="metadata">
+                                <source src="{{ post.media_url }}">
+                                Ваш браузер не поддерживает видео.
+                            </video>
+                        {% else %}
+                            <div class="ratio ratio-16x9 bg-light rounded mb-2">
+                                <iframe src="{{ post.media_url }}" title="media" allowfullscreen></iframe>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    <div class="d-flex gap-2">
+                        <form method="post" action="{{ url_for('main.like', post_id=post.id) }}" class="js-like-form">
+                            <button type="submit" class="btn btn-sm btn-outline-primary js-like-btn" data-post-id="{{ post.id }}">👍 {{ post.likes.count() }}</button>
+                        </form>
+                        <form method="post" action="{{ url_for('main.repost', post_id=post.id) }}" class="js-repost-form">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary js-repost-btn" data-post-id="{{ post.id }}">🔁 Репост</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form class="d-flex align-items-center gap-2 js-comment-form" method="post" action="{{ url_for('main.comment', post_id=post.id) }}">
+                        {{ comment_form.hidden_tag() }}
+                        {{ comment_form.body(class="form-control", placeholder="Комментарий") }}
+                        {{ comment_form.submit(class="btn btn-primary btn-sm") }}
+                    </form>
+                    <div class="js-comments">
+                        {% for c in post.comments %}
+                            <div class="mt-2">
+                                <strong>{{ c.author.name }}</strong> <span class="text-muted small">{{ c.created_at.strftime("%H:%M") }}</span>
+                                <div>{{ c.body }}</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info">Подпишитесь на друзей и группы, чтобы видеть их обновления.</div>
+        {% endfor %}
+    </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="card-title">Игры и тесты</h6>
+                <p class="text-muted small">Мини-зал развлечений прямо в соцсети.</p>
+                <a class="btn btn-outline-primary btn-sm" href="https://games.cdn-tmp/quiz" target="_blank">Пройти квиз</a>
+                <a class="btn btn-outline-success btn-sm" href="https://games.cdn-tmp/puzzle" target="_blank">Паззлы</a>
+            </div>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Фильтр ленты</h6>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge text-bg-primary">Фото</span>
+                    <span class="badge text-bg-success">Видео</span>
+                    <span class="badge text-bg-secondary">Новости</span>
+                </div>
+                <p class="small text-muted mt-2">В демо фильтры декоративные — подключите вашу логику в main/routes.py.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

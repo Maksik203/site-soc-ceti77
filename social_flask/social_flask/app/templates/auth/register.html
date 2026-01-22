@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title mb-3">Регистрация</h3>
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-4 mb-3">{{ form.last_name.label }}{{ form.last_name(class="form-control") }}</div>
+                        <div class="col-md-4 mb-3">{{ form.first_name.label }}{{ form.first_name(class="form-control") }}</div>
+                        <div class="col-md-4 mb-3">{{ form.middle_name.label }}{{ form.middle_name(class="form-control") }}</div>
+                    </div>
+                    <div class="mb-3">{{ form.phone.label }}{{ form.phone(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.date_of_birth.label }}{{ form.date_of_birth(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.password.label }}{{ form.password(class="form-control") }}</div>
+                    <div class="mb-3">{{ form.confirm.label }}{{ form.confirm(class="form-control") }}</div>
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+                <p class="mt-3 text-center">Уже с нами? <a href="{{ url_for('auth.login') }}">Войти</a></p>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 d-none d-lg-block">
+        <div class="hero-blur p-4">
+            <h4>Добро пожаловать!</h4>
+            <p>Создайте аккаунт, чтобы находить одноклассников, коллег и друзей, делиться фото и событиями.</p>
+            <div class="d-flex gap-2 mt-3">
+                <span class="badge text-bg-success">Почта</span>
+                <span class="badge text-bg-info">Телефон</span>
+                <span class="badge text-bg-warning">OAuth</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
